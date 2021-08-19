@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-
-// formik
-import { Formik } from 'formik';
-
-// icons
-import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
-
+import { Formik } from 'formik'; // formik
+import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'; // icons
+import { Button, View } from 'react-native';
 import {
   StyledContainer,
   InnerContainer,
@@ -28,13 +24,10 @@ import {
   TextLink,
   TextLinkContent
 } from '../components/styles'
-import { Button, View } from 'react-native';
 
-// Colors
-const { brand, darkLight, primary } = Colors;
+const { brand, darkLight, primary } = Colors; // Colors
 
 const Login = () => {
-
   const [ hidePassword, setHidePassword ] = useState(true);
 
   return (

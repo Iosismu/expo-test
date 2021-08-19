@@ -10,7 +10,6 @@ import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
 import {
   StyledContainer,
   InnerContainer,
-  PageLogo,
   PageTitle,
   SubTitle,
   StyledFormArea,
@@ -28,33 +27,45 @@ import {
   TextLink,
   TextLinkContent
 } from '../components/styles'
-import { View, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 // Colors
 const { brand, darkLight, primary } = Colors;
 
-// Datetimepicker
-import DateTimePicker from '@react-native-community/datetimepicker';
+// DatetimepickerModal
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const Signup = () => {
 
+  // Password
   const [hidePassword, setHidePassword] = useState(true);
-  const [show, setShow] = useState(false);
-  const [date, setDate] = useState(new Date(2000, 0, 1));
+
+  // DateTimePicker
+  // const [date, setDate] = useState(new Date());
+  // const [mode, setMode] = useState('date');
+  // const [show, setShow] = useState(false);
 
   // Actual date of birth to be sent
   const [dob, setDob] = useState();
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(false);
-    setDate(currentDate);
-    setDob(currentDate);
-  }
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const showDatePicker = () => {
-    setShow(true);
-  }
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date) => {
+    setDob(date);
+    // console.warn("A date has been picked: ", date);
+    hideDatePicker();
+  };
+
+
 
   return (
     <StyledContainer>
@@ -63,16 +74,14 @@ const Signup = () => {
         <PageTitle>Flower Crib</PageTitle>
         <SubTitle>Account Signup</SubTitle>
 
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode='date'
-            is24Hour={true}
-            display="default"
-            onChange={onChange}
+        <View>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
           />
-        )}
+        </View>
 
         <Formik
           initialValues={{ fullName: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
@@ -179,9 +188,11 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, i
       </LeftIcon>
       <StyledInputLabel>{label}</StyledInputLabel>
       {!isDate && <StyledTextInput {...props} />}
-      {isDate && <TouchableOpacity onPress={showDatePicker} >
+      {isDate &&
+        <TouchableOpacity onPress={showDatePicker} >
           <StyledTextInput {...props} />
-        </TouchableOpacity>}
+        </TouchableOpacity>
+      }
       {isPassword && (
         <RightIcon onPress={() => setHidePassword(!hidePassword)}>
           <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={30} color={darkLight} />
