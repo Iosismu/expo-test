@@ -4,6 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 // formik
 import { Formik } from 'formik';
 
+// API
+import axios from 'axios';
+
 // icons
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
 
@@ -29,7 +32,7 @@ import {
   TextLink,
   TextLinkContent
 } from '../components/styles'
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 // Colors
@@ -38,10 +41,13 @@ const { brand, darkLight, primary } = Colors;
 // DatetimepickerModal
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-const Signup = () => {
+const Signup = ({ navigation }) => {
 
   // Password
   const [hidePassword, setHidePassword] = useState(true);
+  const [message, setMessage] = useState();
+  const [messageType, setMessageType] = useState();
+
 
   // DateTimePicker
   // const [date, setDate] = useState(new Date());
@@ -56,6 +62,36 @@ const Signup = () => {
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
+
+  // form handling
+  const handleSignup = (credentials, setSubmitting) => {
+    handleMessage(null);
+    const url = 'http://192.168.219.103:3000/user/signup'
+
+    axios
+      .post(url, credentials)
+      .then((response) => {
+        const result = response.data;
+        const { message, status, data } = result;
+
+        if (status !== 'SUCCESS') {
+          handleMessage(message, status);
+        } else {
+          navigation.navigate('Welcome', { ...data });
+        }
+        setSubmitting(false);
+      })
+      .catch(error => {
+        console.log(error.toJSON());
+        setSubmitting(false);
+        handleMessage("An error occurred. Check your network and try again");
+      })
+  }
+
+  const handleMessage = (message, type = 'FAILED') => {
+    setMessage(message);
+    setMessageType(type);
+  }
 
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
@@ -87,20 +123,29 @@ const Signup = () => {
           </View>
 
           <Formik
-            initialValues={{ fullName: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
-            onSubmit={(values) => {
-              console.log(values);
+            initialValues={{ name: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
+            onSubmit={(values, { setSubmitting }) => {
+              values = {...values, dateOfBirth: dob};
+              if (values.email == '' || values.password == '' || values.name == '' || values.dateOfBirth == '' || values.confirmPassword == '') {
+                handleMessage('Please fill all the fields');
+                setSubmitting(false);
+              } else if (values.password !== values.confirmPassword) {
+                handleMessage('Password do not match');
+                setSubmitting(false);
+              } else {
+                handleSignup(values, setSubmitting);
+              }
             }}
           >
-            {({ handleChange, handleBlur, handleSubmit, values }) => <StyledFormArea>
+            {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => <StyledFormArea>
               <MyTextInput
                 label="Full Name"
                 icon="person"
                 placeholder="Name"
                 placeholderTextColor={darkLight}
-                onChangeText={handleChange('fullName')}
-                onBlur={handleBlur('fullName')}
-                value={values.fullName}
+                onChangeText={handleChange('name')}
+                onBlur={handleBlur('name')}
+                value={values.name}
               />
 
               <MyTextInput
@@ -155,20 +200,27 @@ const Signup = () => {
                 setHidePassword={setHidePassword}
               />
 
-              <MsgBox>
-                ...
+              <MsgBox type={messageType}>
+                {message}
               </MsgBox>
 
-              <StyledButton onPress={handleSubmit} >
+              {!isSubmitting && <StyledButton onPress={handleSubmit} >
                 <ButtonText>
-                  Login
+                  Sign Up
                 </ButtonText>
               </StyledButton>
+              }
+
+              {isSubmitting && <StyledButton disabled={true}>
+                <ActivityIndicator size="large" color={primary} />
+              </StyledButton>
+              }
+
               <Line />
 
               <ExtraView>
                 <ExtraText>Already have an account?</ExtraText>
-                <TextLink>
+                <TextLink onPress={() => navigation.navigate('Login')}>
                   <TextLinkContent>
                     Login
                   </TextLinkContent>

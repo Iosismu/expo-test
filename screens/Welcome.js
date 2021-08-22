@@ -14,7 +14,9 @@ import {
   Avatar
 } from '../components/styles'
 
-const Welcome = () => {
+const Welcome = ({navigation, route}) => {
+  const {name, email, photoUrl} = route.params;
+  const AvatarImg = photoUrl ? { uri: photoUrl } : require('./../assets/img/expo-bg1.png');
 
   return (
     <>
@@ -23,20 +25,20 @@ const Welcome = () => {
         <WelcomeImage resizeMode="cover" source={require('./../assets/img/expo-bg2.png')} />
         <WelcomeContainer>
           <PageTitle welcome={true} >Welcome Buddy</PageTitle>
-          <SubTitle welcome={true} >Bini's First RN Clone App</SubTitle>
-          <SubTitle welcome={true} >evanpark333@gmail.com</SubTitle>
+          <SubTitle welcome={true} >{name || "Bini's First RN Clone App"}</SubTitle>
+          <SubTitle welcome={true} >{email || 'evanpark333@gmail.com'}</SubTitle>
           <StyledFormArea>
-            <Avatar resizeMode="cover" source={require('./../assets/img/expo-bg1.png')} />
+            <Avatar resizeMode="cover" source={AvatarImg} />
 
             <Line />
-            <StyledButton onPress={() => { }} >
+            <StyledButton onPress={() => {navigation.navigate('Login')}} >
               <ButtonText>
                 Logout
               </ButtonText>
             </StyledButton>
           </StyledFormArea>
         </WelcomeContainer>
-      </InnerContainer>
+      </InnerContainer> 
     </>
   );
 };

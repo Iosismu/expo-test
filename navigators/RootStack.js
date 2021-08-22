@@ -26,17 +26,26 @@ const RootStack = () => {
           headerTransparent: true,
           headerTitle: '',
           headerLeftContainerStyle: {
-            paddingLeft: 20
-          }
+            paddingLeft: 20,
+          },
         }}
-        initialRouteName="Login"
+        initialRouteName="Login" // 처음 시작 로딩 되는 페이지
       >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen options={{ headerTintColor: primary }} name="Welcome" component={Welcome} />
       </Stack.Navigator>
     </NavigationContainer>
   )
 }
 
 export default RootStack;
+
+// 싸이클
+// 반응형
+// 데이터
+// 
+// 
+// 
+// 
+// 
