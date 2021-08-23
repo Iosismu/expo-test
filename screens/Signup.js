@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 
 // formik
@@ -7,11 +7,16 @@ import { Formik } from 'formik';
 // API
 import axios from 'axios';
 
+// 자동 로그인
+// async-storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// credentials context
+import { CredentialsContext } from './../components/CredentialsContext';
+
 // icons
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
-
 import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper';
-
 import {
   StyledContainer,
   InnerContainer,
@@ -48,6 +53,8 @@ const Signup = ({ navigation }) => {
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
 
+  // context
+  const { storedCredentials, setStoredCredentials } = useContext(CredentialsContext);
 
   // DateTimePicker
   // const [date, setDate] = useState(new Date());
@@ -77,7 +84,7 @@ const Signup = ({ navigation }) => {
         if (status !== 'SUCCESS') {
           handleMessage(message, status);
         } else {
-          navigation.navigate('Welcome', { ...data });
+          persistLogin({ ...data }, message, status);
         }
         setSubmitting(false);
       })
@@ -103,7 +110,17 @@ const Signup = ({ navigation }) => {
     hideDatePicker();
   };
 
-
+  const persistLogin = (credentials, message, status) => {
+    AsyncStorage.setItem('testCridentials', JSON.stringify(credentials))
+      .then(() => {
+        handleMessage(message, status);
+        setStoredCredentials(credentials);
+      })
+      .catch((error) => {
+        console.log(error);
+        handleMessage('Persisting login failed');
+      })
+  }
 
   return (
     <KeyboardAvoidingWrapper>
@@ -125,7 +142,7 @@ const Signup = ({ navigation }) => {
           <Formik
             initialValues={{ name: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
             onSubmit={(values, { setSubmitting }) => {
-              values = {...values, dateOfBirth: dob};
+              values = { ...values, dateOfBirth: dob };
               if (values.email == '' || values.password == '' || values.name == '' || values.dateOfBirth == '' || values.confirmPassword == '') {
                 handleMessage('Please fill all the fields');
                 setSubmitting(false);

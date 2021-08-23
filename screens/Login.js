@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Formik } from 'formik'; // formik
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'; // icons
@@ -6,6 +6,14 @@ import { View, ActivityIndicator } from 'react-native';
 import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper';
 import axios from 'axios';
 import * as Google from 'expo-google-app-auth';
+
+// 자동 로그인
+// async-storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// credentials context
+import { CredentialsContext } from './../components/CredentialsContext';
+
 import {
   StyledContainer,
   InnerContainer,
@@ -36,6 +44,9 @@ const Login = ({ navigation }) => {
   const [messageType, setMessageType] = useState();
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
 
+  // context
+  const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
+
   const handleLogin = (credentials, setSubmitting) => {
     handleMessage(null);
     const url = 'http://192.168.219.103:3000/user/signin'
@@ -49,7 +60,7 @@ const Login = ({ navigation }) => {
         if (status !== 'SUCCESS') {
           handleMessage(message, status);
         } else {
-          navigation.navigate('Welcome', { ...data[0] });
+          persistLogin({ ...data[0] }, message, status);
         }
         setSubmitting(false);
       })
@@ -79,8 +90,7 @@ const Login = ({ navigation }) => {
 
         if (type == 'success') {
           const { email, name, photoUrl } = user;
-          handleMessage('Google signin successful', 'SUCCESS');
-          setTimeout(() => navigation.navigate('Welcome', { email, name, photoUrl }), 1000);
+          persistLogin({ email, name, photoUrl }, message, 'SUCCESS');
         } else {
           handleMessage('Google signin was cancelled');
         }
@@ -90,7 +100,19 @@ const Login = ({ navigation }) => {
         console.log(error);
         handleMessage('An error occurred. Check your network and try again');
         setGoogleSubmitting(false);
-      })
+    })
+  }
+
+  const persistLogin = (credentials, message, status) => {
+    AsyncStorage.setItem('testCridentials', JSON.stringify(credentials))
+    .then(() => {
+      handleMessage(message, status);
+      setStoredCredentials(credentials);
+    })
+    .catch((error) => {
+      console.log(error);
+      handleMessage('Persisting login failed');
+    })
   }
 
   return (
@@ -142,7 +164,7 @@ const Login = ({ navigation }) => {
                 {message}
               </MsgBox>
 
-              {!isSubmitting && <StyledButton onPress={handleGoogleSignin} >
+              {!isSubmitting && <StyledButton onPress={handleSubmit} >
                 <ButtonText>
                   Login
                 </ButtonText>
@@ -160,7 +182,7 @@ const Login = ({ navigation }) => {
                 (<StyledButton google={true} onPress={handleGoogleSignin} >
                   <Fontisto name="google" color={primary} size={25} />
                   <ButtonText google={true}>
-                    Sign in width Google
+                    Sign in with Google
                   </ButtonText>
                 </StyledButton>
                 )}

@@ -1,5 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
+
+// 자동 로그인
+// async-storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// credentials context
+import { CredentialsContext } from './../components/CredentialsContext';
 
 import {
   InnerContainer,
@@ -14,9 +21,20 @@ import {
   Avatar
 } from '../components/styles'
 
-const Welcome = ({navigation, route}) => {
-  const {name, email, photoUrl} = route.params;
+const Welcome = () => {
+
+  // context
+  const { storedCredentials, setStoredCredentials } = useContext(CredentialsContext);
+  const {name, email, photoUrl} = storedCredentials;
   const AvatarImg = photoUrl ? { uri: photoUrl } : require('./../assets/img/expo-bg1.png');
+
+  const clearLogin = () => {
+    AsyncStorage.removeItem('testCridentials')
+    .then(() => {
+      setStoredCredentials("");
+    })
+    .catch((error) => console.log(error))
+  }
 
   return (
     <>
@@ -31,7 +49,7 @@ const Welcome = ({navigation, route}) => {
             <Avatar resizeMode="cover" source={AvatarImg} />
 
             <Line />
-            <StyledButton onPress={() => {navigation.navigate('Login')}} >
+            <StyledButton onPress={clearLogin} >
               <ButtonText>
                 Logout
               </ButtonText>
