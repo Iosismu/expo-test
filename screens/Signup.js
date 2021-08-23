@@ -17,6 +17,10 @@ import { CredentialsContext } from './../components/CredentialsContext';
 // icons
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
 import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper';
+
+import { Appearance } from 'react-native-appearance'; 
+const colorScheme = Appearance.getColorScheme();
+
 import {
   StyledContainer,
   InnerContainer,
@@ -136,6 +140,7 @@ const Signup = ({ navigation }) => {
               mode="date"
               onConfirm={handleConfirm}
               onCancel={hideDatePicker}
+              isDarkModeEnabled={colorScheme == 'dark'}
             />
           </View>
 
