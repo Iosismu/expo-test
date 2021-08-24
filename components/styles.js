@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
 import Constants from 'expo-constants';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const StatusBarHeight = Constants.statusBarHeight;
 
@@ -20,7 +21,7 @@ const { primary, secondary, tertiary, darkLight, brand, green, red } = Colors;
 export const StyledContainer = styled.View`
   flex: 1;
   padding: 25px;
-  padding-top: ${StatusBarHeight + 30}px;
+  padding-top: ${StatusBarHeight + 40}px;
   background-color: ${primary};
 `;
 
@@ -37,8 +38,8 @@ export const WelcomeContainer = styled(InnerContainer)`
 `;
 
 export const PageLogo = styled.Image`
-  width: 250px;
-  height: 200px;
+  width: ${wp(60)};
+  height: ${hp(25)};
 `;
 
 export const Avatar = styled.Image`
@@ -62,7 +63,7 @@ export const PageTitle = styled.Text`
   text-align: center;
   font-weight: bold;
   color: ${brand};
-  padding: 10px;
+  padding: 1px;
 
   ${(props) => props.welcome && 
     `
@@ -90,12 +91,12 @@ export const StyledFormArea = styled.View`
 
 export const StyledTextInput = styled.TextInput`
   background-color: ${secondary};
-  padding: 15px;
+  padding: ${hp(1.9)}px;
   padding-left: 55px;
   padding-right: 55px;
   border-radius: 5px;
   font-size: 16px;
-  margin-vertical: 3px;
+  margin-vertical: ${hp(0.6)}px;
   margin-bottom: 10px;
   color: ${tertiary};
 `;
@@ -108,14 +109,14 @@ export const StyledInputLabel = styled.Text`
 
 export const LeftIcon = styled.View`
   left: 15px;
-  top: 28px;
+  top: ${wp(8)}px;
   position: absolute;
   z-index: 1;
 `;
 
 export const RightIcon = styled.TouchableOpacity`
   right: 15px;
-  top: 28px;
+  top: ${wp(7.5)}px;
   position: absolute;
   z-index: 1;
 `;
@@ -126,8 +127,8 @@ export const StyledButton = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  margin-vertical: 5px;
-  height: 60px;
+  margin-vertical: ${wp(0.5)}px;
+  height: 13.5%;
 
   ${(props) => props.google == true &&
     `

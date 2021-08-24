@@ -18,7 +18,7 @@ import { CredentialsContext } from './../components/CredentialsContext';
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons';
 import KeyboardAvoidingWrapper from './../components/KeyboardAvoidingWrapper';
 
-import { Appearance } from 'react-native-appearance'; 
+import { Appearance } from 'react-native-appearance';
 const colorScheme = Appearance.getColorScheme();
 
 import {
@@ -69,6 +69,8 @@ const Signup = ({ navigation }) => {
   const [dob, setDob] = useState();
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -168,12 +170,14 @@ const Signup = ({ navigation }) => {
                 onChangeText={handleChange('name')}
                 onBlur={handleBlur('name')}
                 value={values.name}
+                returnKeyType={"next"}
               />
 
               <MyTextInput
                 label="Email"
                 icon="mail"
                 placeholder="email"
+                returnKeyType={"next"}
                 placeholderTextColor={darkLight}
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
